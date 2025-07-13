@@ -57,12 +57,12 @@ public class DriveTest extends LinearOpMode {
                 powerBR  /= max;
             }
 
-            /*
-            powerFL  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            powerBL   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            powerFR = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            powerBR  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
+
+//            powerFL  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
+//            powerBL   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
+//            powerFR = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
+//            powerBR  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+
 
             // Send calculated power to wheels
             driveFL.setPower(powerFL);
