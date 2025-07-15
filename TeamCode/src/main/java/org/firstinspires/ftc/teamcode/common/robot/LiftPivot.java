@@ -35,7 +35,7 @@ public class LiftPivot {
         }
     }
 
-
+//d
 
     public LiftState liftState = LiftState.RETRACTED;
     public PivotState pivotState = PivotState.BUCKET;

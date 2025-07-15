@@ -36,7 +36,7 @@ public class ArmTest extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 arm.setArmToState(Arm.ArmState.BUCKET);
             }
-
+//fd
 //            if (gamepad1.cross && xToggle) {
 //                xToggle = false;
 //                sleep(200);

@@ -40,7 +40,7 @@ public class Arm {
 
     public void init(HardwareMap hMap) {
         mainMap = hMap;
-
+//fd
         armServo = hMap.get(Servo.class, "armServo");
         wristServo = hMap.get(Servo.class, "wristServo");
         clawServo = hMap.get(Servo.class, "clawServo");
