@@ -5,32 +5,48 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Pivot + Lift PID Test", group = "Tests")
+@TeleOp(name = "Pivot + Lift PID/FF Test", group = "Tests")
 public class PivotLiftPIDTest extends LinearOpMode {
 
-    //–––– Hardware ––––
+    /* ----------------------------------------------------------------
+       HARDWARE
+     ---------------------------------------------------------------- */
     private DcMotorEx pivotL, pivotR;
     private DcMotorEx liftL,  liftR;
 
-    //–––– PID gains (initial guesses) ––––
-    // Pivot
-    private static final double kP_p = 0.008;
-    private static final double kI_p = 0.0000;
-    private static final double kD_p = 0.0003;
-    // Lift  (vertical screw/chain → usually needs lower kP)
-    private static final double kP_l = 0.004;
-    private static final double kI_l = 0.0000;
-    private static final double kD_l = 0.0002;
+    /* ----------------------------------------------------------------
+       CONSTANTS you will tune ↓↓↓
+     ---------------------------------------------------------------- */
+    // –– Ticks / deg for your encoder‑gearbox chain (≈ 288 :1 goBilda HD).
+    private static final double TICKS_PER_DEG = 26.13;
 
-    //–––– Targets ––––
-    private double targetPivotTicks = 30;
-    private double targetLiftTicks  = 0;
+    // –– PID gains (rough starting points)
+    private static final double kP_PIVOT = 0.008,  kI_PIVOT = 0.00,   kD_PIVOT = 0.0003;
+    private static final double kP_LIFT  = 0.004,  kI_LIFT  = 0.00,   kD_LIFT  = 0.0002;
+
+    // –– Feed‑forward for gravity on pivot (adjust until arm “floats”)
+    private static final double GRAVITY_FF_NOMINAL = 0.05;     // base when lift down
+    private static final double LIFT_SAG_GAIN      = 8e-5;     // extra FF per lift tick
+
+    // –– Motion limits (ticks)
+    private static final int MIN_PIVOT = -30, MAX_PIVOT =  600;
+    private static final int MIN_LIFT  =    0, MAX_LIFT  = 2200;
+
+    // –– Joystick scaling
+    private static final double STICK_PIVOT_SCALAR =  90;   // ticks/sec at full deflection
+    private static final double STICK_LIFT_SCALAR  = 250;   // ticks/sec
+
+    /* ----------------------------------------------------------------
+       STATE
+     ---------------------------------------------------------------- */
+    private double targetPivot = 0, targetLift = 0;
 
     @Override
     public void runOpMode() {
 
-        //–– Map hardware ––
+        /* ------------ hardware map ------------ */
         pivotL = hardwareMap.get(DcMotorEx.class, "pivotMotorL");
         pivotR = hardwareMap.get(DcMotorEx.class, "pivotMotorR");
         liftL  = hardwareMap.get(DcMotorEx.class, "liftMotorL");
@@ -44,72 +60,91 @@ public class PivotLiftPIDTest extends LinearOpMode {
         pivotL.setDirection(DcMotorSimple.Direction.REVERSE);
         liftL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        telemetry.addLine("▶ to start\n" +
-                "Pivot  : D‑pad ↑/↓\n" +
-                "Lift   :  X (up) / B (down)");
+        telemetry.addLine("▶  START\n"
+                + "Increment—Pivot: D‑pad ▲/▼  Lift:  X/B\n"
+                + "Fine ctrl—Right‑stick‑Y (pivot), Left‑stick‑Y (lift)");
         telemetry.update();
         waitForStart();
 
-        //–– Book‑keeping ––
-        double intPivot = 0, prevErrPivot = 0;
-        double intLift  = 0, prevErrLift  = 0;
-        ElapsedTime timer = new ElapsedTime();
+        /* ------------ PID bookkeeping ------------ */
+        double iPivot = 0, prevErrPivot = 0;
+        double iLift  = 0, prevErrLift  = 0;
+        ElapsedTime dtTimer = new ElapsedTime();
 
         while (opModeIsActive()) {
 
-            //–––– Adjust targets ––––
-            if (gamepad1.dpad_up)    targetPivotTicks += 10;
-            if (gamepad1.dpad_down)  targetPivotTicks -= 10;
-            if (gamepad1.x)          targetLiftTicks  += 20;
-            if (gamepad1.b)          targetLiftTicks  -= 20;
+            /* =========================================================
+               TARGET UPDATES — bump buttons & fine sticks
+             ========================================================= */
+            // bump buttons (big-step)
+            if (gamepad1.dpad_up)    targetPivot += 25;
+            if (gamepad1.dpad_down)  targetPivot -= 25;
+            if (gamepad1.x)          targetLift  += 75;
+            if (gamepad1.b)          targetLift  -= 75;
 
-            //–––– Timing ––––
-            double dt = timer.seconds();
-            timer.reset();
+            // fine joysticks (proportional rate)
+            double dt = dtTimer.seconds();
+            dtTimer.reset();
 
-            /* =======================================================
-               PIVOT PID
-             ======================================================= */
-            double posPivot = pivotL.getCurrentPosition();                     // assume mirrored encoders
-            double errPivot = targetPivotTicks - posPivot;
+            targetPivot += -gamepad1.right_stick_y * STICK_PIVOT_SCALAR * dt;
+            targetLift  += -gamepad1.left_stick_y  * STICK_LIFT_SCALAR  * dt;
 
-            intPivot += errPivot * dt;
-            double derPivot = (errPivot - prevErrPivot) / dt;
+            // clamp to safe range
+            targetPivot = Range.clip(targetPivot, MIN_PIVOT, MAX_PIVOT);
+            targetLift  = Range.clip(targetLift,  MIN_LIFT,  MAX_LIFT);
+
+            /* =========================================================
+               PIVOT PID + GRAVITY FEED‑FORWARD
+             ========================================================= */
+            double posPivot = pivotL.getCurrentPosition();
+            double errPivot = targetPivot - posPivot;
+
+            iPivot   += errPivot * dt;
+            double dPivot = (errPivot - prevErrPivot) / dt;
             prevErrPivot = errPivot;
 
-            double outPivot = kP_p*errPivot + kI_p*intPivot + kD_p*derPivot;
-            outPivot = Math.max(-1, Math.min(1, outPivot));
+            // Pivot angle in radians for cos(θ)         (encoder→deg→rad)
+            double thetaRad = posPivot / TICKS_PER_DEG * Math.PI / 180.0;
+
+            double gravityFF = (GRAVITY_FF_NOMINAL + LIFT_SAG_GAIN * liftL.getCurrentPosition()) * Math.cos(thetaRad);
+
+            double outPivot = kP_PIVOT*errPivot + kI_PIVOT*iPivot + kD_PIVOT*dPivot + gravityFF;
+            outPivot = Range.clip(outPivot, -1, 1);
 
             pivotL.setPower(outPivot);
             pivotR.setPower(outPivot);
 
-            /* =======================================================
+            /* =========================================================
                LIFT PID
-             ======================================================= */
-            double posLift = liftL.getCurrentPosition();                       // assume both lifts stay aligned
-            double errLift = targetLiftTicks - posLift;
+             ========================================================= */
+            double posLift = liftL.getCurrentPosition();
+            double errLift = targetLift - posLift;
 
-            intLift += errLift * dt;
-            double derLift = (errLift - prevErrLift) / dt;
+            iLift   += errLift * dt;
+            double dLift = (errLift - prevErrLift) / dt;
             prevErrLift = errLift;
 
-            double outLift = kP_l*errLift + kI_l*intLift + kD_l*derLift;
-            outLift = Math.max(-1, Math.min(1, outLift));
+            double outLift = kP_LIFT*errLift + kI_LIFT*iLift + kD_LIFT*dLift;
+            outLift = Range.clip(outLift, -1, 1);
 
             liftL.setPower(outLift);
             liftR.setPower(outLift);
 
-            //–––– Telemetry ––––
-            telemetry.addLine("== Pivot ==");
-            telemetry.addData("Target", targetPivotTicks);
-            telemetry.addData("Pos",    posPivot);
-            telemetry.addData("Err",    errPivot);
-            telemetry.addData("Power",  outPivot);
-            telemetry.addLine("== Lift ==");
-            telemetry.addData("Target", targetLiftTicks);
-            telemetry.addData("Pos",    posLift);
-            telemetry.addData("Err",    errLift);
-            telemetry.addData("Power",  outLift);
+            /* =========================================================
+               TELEMETRY
+             ========================================================= */
+            telemetry.addLine("=== Pivot ===");
+            telemetry.addData("Tgt",   (int) targetPivot);
+            telemetry.addData("Pos",   (int) posPivot);
+            telemetry.addData("Err",   (int) errPivot);
+            telemetry.addData("FF",    String.format("%.3f", gravityFF));
+            telemetry.addData("Pwr",   String.format("%.3f", outPivot));
+
+            telemetry.addLine("=== Lift ===");
+            telemetry.addData("Tgt",   (int) targetLift);
+            telemetry.addData("Pos",   (int) posLift);
+            telemetry.addData("Err",   (int) errLift);
+            telemetry.addData("Pwr",   String.format("%.3f", outLift));
             telemetry.update();
         }
     }
