@@ -11,7 +11,26 @@ public class Arm {
     private Servo wristServo = null;
     private Servo clawServo = null;
 
+    public enum ArmState {
+        IDLE(0.34);
+        public double armServoValue;
 
+        ArmState(double armServoValue){
+            this.armServoValue = armServoValue;
+        }
+    }
+
+    public enum WristState {
+        HORIZONTAL(0.5);
+        public double wristServoValue;
+
+        WristState(Double wristServoValue){
+            this.wristServoValue = wristServoValue;
+        }
+    }
+
+    public ArmState armState = ArmState.IDLE;
+    public WristState wristState = WristState.HORIZONTAL;
     public Arm(HardwareMap hMap) {
         init(hMap);
     }
@@ -25,44 +44,28 @@ public class Arm {
 
         clawServo.setDirection(Servo.Direction.REVERSE);
 
-        resetServos();
-
+        setArmToState(armState);
+        setWristToState(wristState);
+        clawOpen();
     }
-
-//    public void cycleState1() {
-//        armServo.setPosition(0.5);
-//        wristServo.setPosition(0.5);
-//        clawServo.setPosition(0.5);
-//    }
-
-    public void resetServos() {
-        armServo.setPosition(0);
-        wristServo.setPosition(0);
-        clawServo.setPosition(0.01);
+    public void setArmToState(ArmState targetState) {
+        armState = targetState;
+        setArmServoPosition(armState.armServoValue);
     }
-
-    public void wristReset() {
-        wristServo.setPosition(0);
+    public void setWristToState(WristState targetState) {
+        wristState = targetState;
+        setWristServoPosition(wristState.wristServoValue);
     }
-    public void wristTest() {
-        wristServo.setPosition(1);
-
+    public void setWristServoPosition(double servoPosition){
+        wristServo.setPosition(servoPosition);
     }
-
-    public void armReset() {
-        armServo.setPosition(0.1);
+    public void setArmServoPosition(double servoPosition){
+        armServo.setPosition(servoPosition);
     }
-
-    public void armTest() {
-        armServo.setPosition(0.8);
-
+    public void clawClose(){
+        clawServo.setPosition(1);
     }
-
-    public void clawReset() {
-        clawServo.setPosition(0.01);
-    }
-    public void clawTest() {
-        clawServo.setPosition(0.28);
+    public void clawOpen(){
+        clawServo.setPosition(0.4);
     }
 }
-//hi
