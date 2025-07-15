@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.common.robot.Arm;
 @TeleOp(name="ArmTest", group="Tests")
 public class ArmTest extends LinearOpMode {
 
-    private int xToggle = 0;
-    private int oToggle = 0;
-    private int squareToggle = 0;
+    private boolean xToggle = false;
+    private boolean oToggle = false;
+    private boolean squareToggle = false;
     private ElapsedTime runtime = new ElapsedTime();
     private Arm arm = null;
 
@@ -45,39 +45,40 @@ public class ArmTest extends LinearOpMode {
 //                arm.resetServos();
 //            }
 
-            if (gamepad1.cross) {
-                xToggle = 1;
-            } else {
-                xToggle = 0;
+            if (gamepad1.cross && xToggle) {
+                xToggle = false;
+            } else if (gamepad1.cross && !xToggle){
+                xToggle = true;
             }
 
-            if (gamepad1.circle) {
-                oToggle = 1;
-            } else {
-                oToggle = 0;
+            if (gamepad1.circle && oToggle) {
+                oToggle = false;
+            } else if (gamepad1.circle && !oToggle){
+                oToggle = true;
             }
 
-            if (gamepad1.square) {
-                squareToggle = 1;
-            } else {
-                squareToggle = 0;
+            if (gamepad1.square && squareToggle) {
+                squareToggle = false;
+            } else if (gamepad1.square && !squareToggle){
+                squareToggle = true;
             }
 
-            if (xToggle == 1) {
+
+            if (xToggle) {
                 arm.clawTest();
-            } else if (xToggle == 0) {
+            } else if (!xToggle) {
                 arm.clawReset();
             }
 
-            if (oToggle == 1) {
+            if (oToggle) {
                 arm.wristTest();
-            } else if (oToggle == 0) {
+            } else if (!oToggle) {
                 arm.wristReset();
             }
 
-            if (squareToggle == 1) {
+            if (squareToggle) {
                 arm.armTest();
-            } else if (squareToggle == 0) {
+            } else if (!squareToggle) {
                 arm.armReset();
             }
 
