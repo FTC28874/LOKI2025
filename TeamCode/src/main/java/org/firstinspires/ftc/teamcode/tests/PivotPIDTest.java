@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Pivot PID Test", group = "Tests")
@@ -16,7 +17,7 @@ public class PivotPIDTest extends LinearOpMode {
     private static final double kD = 0.0003;
 
     //––– Target position (encoder ticks) –––
-    private double targetTicks = 500;   // change on DS or hard‑code
+    private double targetTicks = 30;   // change on DS or hard‑code
 
     @Override
     public void runOpMode() {
@@ -29,6 +30,7 @@ public class PivotPIDTest extends LinearOpMode {
             m.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             m.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         }
+        pivotL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Telemetry prompt
         telemetry.addLine("Press ▶ to start, then use ↑/↓ on d‑pad to move target.");
@@ -45,7 +47,7 @@ public class PivotPIDTest extends LinearOpMode {
             if (gamepad1.dpad_down)  targetTicks -= 10;
 
             //––– Read –––
-            double pos = (pivotL.getCurrentPosition() + pivotR.getCurrentPosition()) / 2.0;
+            double pos = pivotL.getCurrentPosition();
             double error = targetTicks - pos;
             double dt = timer.seconds();
             timer.reset();
