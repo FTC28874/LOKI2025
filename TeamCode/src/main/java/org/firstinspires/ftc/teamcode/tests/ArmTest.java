@@ -40,7 +40,7 @@ public class ArmTest extends LinearOpMode {
 //            if (gamepad1.square) {
 //                arm.armTest();
 //            }
-//
+//hi
 //            if (gamepad1.triangle) {
 //                arm.resetServos();
 //            }
