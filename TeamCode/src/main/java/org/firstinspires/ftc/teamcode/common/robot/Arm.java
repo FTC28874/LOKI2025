@@ -50,11 +50,11 @@ public class Arm {
     }
 
     public void armReset() {
-        armServo.setPosition(0);
+        armServo.setPosition(0.1);
     }
 
     public void armTest() {
-        armServo.setPosition(0.5);
+        armServo.setPosition(0.8);
 
     }
 

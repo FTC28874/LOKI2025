@@ -47,20 +47,26 @@ public class ArmTest extends LinearOpMode {
 
             if (gamepad1.cross && xToggle) {
                 xToggle = false;
+                sleep(200);
             } else if (gamepad1.cross && !xToggle){
                 xToggle = true;
+                sleep(200);
             }
 
             if (gamepad1.circle && oToggle) {
                 oToggle = false;
+                sleep(200);
             } else if (gamepad1.circle && !oToggle){
                 oToggle = true;
+                sleep(200);
             }
 
             if (gamepad1.square && squareToggle) {
                 squareToggle = false;
+                sleep(200);
             } else if (gamepad1.square && !squareToggle){
                 squareToggle = true;
+                sleep(200);
             }
 
 
