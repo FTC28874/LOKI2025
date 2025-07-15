@@ -12,7 +12,8 @@ public class Arm {
     private Servo clawServo = null;
 
     public enum ArmState {
-        IDLE(0.34);
+        IDLE(0.75),
+        BUCKET(0.3);
         public double armServoValue;
 
         ArmState(double armServoValue){
@@ -21,13 +22,15 @@ public class Arm {
     }
 
     public enum WristState {
-        HORIZONTAL(0.5);
+        HORIZONTAL(0.38);
         public double wristServoValue;
 
         WristState(Double wristServoValue){
             this.wristServoValue = wristServoValue;
         }
     }
+
+
 
     public ArmState armState = ArmState.IDLE;
     public WristState wristState = WristState.HORIZONTAL;
@@ -63,9 +66,9 @@ public class Arm {
         armServo.setPosition(servoPosition);
     }
     public void clawClose(){
-        clawServo.setPosition(1);
+        clawServo.setPosition(0.01);
     }
     public void clawOpen(){
-        clawServo.setPosition(0.4);
+        clawServo.setPosition(0.28);
     }
 }

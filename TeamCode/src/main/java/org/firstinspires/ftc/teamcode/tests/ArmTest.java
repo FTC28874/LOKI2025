@@ -29,64 +29,56 @@ public class ArmTest extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-//            if (gamepad1.cross) {
+
+            if (gamepad1.dpad_down) {
+                arm.setArmToState(Arm.ArmState.IDLE);
+            }
+            if (gamepad1.dpad_up) {
+                arm.setArmToState(Arm.ArmState.BUCKET);
+            }
+
+//            if (gamepad1.cross && xToggle) {
+//                xToggle = false;
+//                sleep(200);
+//            } else if (gamepad1.cross && !xToggle){
+//                xToggle = true;
+//                sleep(200);
+//            }
+//
+//            if (gamepad1.circle && oToggle) {
+//                oToggle = false;
+//                sleep(200);
+//            } else if (gamepad1.circle && !oToggle){
+//                oToggle = true;
+//                sleep(200);
+//            }
+//
+//            if (gamepad1.square && squareToggle) {
+//                squareToggle = false;
+//                sleep(200);
+//            } else if (gamepad1.square && !squareToggle){
+//                squareToggle = true;
+//                sleep(200);
+//            }
+//
+//
+//            if (xToggle) {
 //                arm.clawTest();
+//            } else if (!xToggle) {
+//                arm.clawReset();
 //            }
 //
-//            if (gamepad1.circle) {
+//            if (oToggle) {
 //                arm.wristTest();
+//            } else if (!oToggle) {
+//                arm.wristReset();
 //            }
 //
-//            if (gamepad1.square) {
+//            if (squareToggle) {
 //                arm.armTest();
+//            } else if (!squareToggle) {
+//                arm.armReset();
 //            }
-//hi
-//            if (gamepad1.triangle) {
-//                arm.resetServos();
-//            }
-
-            if (gamepad1.cross && xToggle) {
-                xToggle = false;
-                sleep(200);
-            } else if (gamepad1.cross && !xToggle){
-                xToggle = true;
-                sleep(200);
-            }
-
-            if (gamepad1.circle && oToggle) {
-                oToggle = false;
-                sleep(200);
-            } else if (gamepad1.circle && !oToggle){
-                oToggle = true;
-                sleep(200);
-            }
-
-            if (gamepad1.square && squareToggle) {
-                squareToggle = false;
-                sleep(200);
-            } else if (gamepad1.square && !squareToggle){
-                squareToggle = true;
-                sleep(200);
-            }
-
-
-            if (xToggle) {
-                arm.clawTest();
-            } else if (!xToggle) {
-                arm.clawReset();
-            }
-
-            if (oToggle) {
-                arm.wristTest();
-            } else if (!oToggle) {
-                arm.wristReset();
-            }
-
-            if (squareToggle) {
-                arm.armTest();
-            } else if (!squareToggle) {
-                arm.armReset();
-            }
 
 
 
