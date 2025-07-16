@@ -28,10 +28,10 @@ public class PivotLiftPIDTest extends LinearOpMode {
 
     // –– Feed‑forward for gravity on pivot (adjust until arm “floats”)
     private static final double GRAVITY_FF_NOMINAL = 0.05;     // base when lift down
-    private static final double LIFT_SAG_GAIN      = 8e-5;     // extra FF per lift tick
+    private static final double LIFT_SAG_GAIN      = -3e-4;     // extra FF per lift tick
 
     // –– Motion limits (ticks)
-    private static final int MIN_PIVOT = -30, MAX_PIVOT =  600;
+    private static final int MIN_PIVOT = -20, MAX_PIVOT =  600;
     private static final int MIN_LIFT  =    0, MAX_LIFT  = 2200;
 
     // –– Joystick scaling
@@ -77,10 +77,10 @@ public class PivotLiftPIDTest extends LinearOpMode {
                TARGET UPDATES — bump buttons & fine sticks
              ========================================================= */
             // bump buttons (big-step)
-            if (gamepad1.dpad_up)    targetPivot += 25;
-            if (gamepad1.dpad_down)  targetPivot -= 25;
-            if (gamepad1.x)          targetLift  += 75;
-            if (gamepad1.b)          targetLift  -= 75;
+            if (gamepad1.dpad_up)    targetPivot += 10;
+            if (gamepad1.dpad_down)  targetPivot -= 10;
+            if (gamepad1.x)          targetLift  += 35;
+            if (gamepad1.b)          targetLift  -= 35;
 
             // fine joysticks (proportional rate)
             double dt = dtTimer.seconds();
