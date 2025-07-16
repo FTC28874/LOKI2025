@@ -44,7 +44,7 @@ public class LokiTeleOp2025 extends OpMode {
 
         // Presets for intake positions
         if (gamepad2.a) {
-            robot.liftPivot.setLiftState(LiftPivot.LiftState.RETRACTED);
+            robot.liftPivot.setLiftState(LiftPivot.LiftState.INTAKE_MID);
             if (robot.liftPivot.isLiftRetractedForPivot()) {
                 // Go slightly below normal intake to secure object
                 robot.liftPivot.setPivotState(LiftPivot.PivotState.INTAKE);
