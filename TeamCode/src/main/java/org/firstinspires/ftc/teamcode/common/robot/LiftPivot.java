@@ -132,4 +132,8 @@ public class LiftPivot {
     public int getLiftPosition() {
         return liftMotorL.getCurrentPosition();
     }
+
+    public boolean isLiftRetractedForPivot() {
+        return getLiftPosition() <= 100; // threshold value
+    }
 }
