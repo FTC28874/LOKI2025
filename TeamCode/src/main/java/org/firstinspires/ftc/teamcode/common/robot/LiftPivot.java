@@ -23,7 +23,7 @@ public class LiftPivot {
     private static final double LIFT_SAG_GAIN = -3e-4;
 
     // Motion limits
-    private static final int MIN_PIVOT = -20, MAX_PIVOT = 600;
+    private static final int MIN_PIVOT = -50, MAX_PIVOT = 600;
     private static final int MIN_LIFT  = 0, MAX_LIFT = 2280;
 
     // Internal PID state
@@ -49,7 +49,7 @@ public class LiftPivot {
     public enum PivotState {
         IDLE(0),
         INTAKE(480),
-        LOWERED_INTAKE(510),
+        LOWERED_INTAKE(530),
         BUCKET(-50);
 
         public final int encoderValue;

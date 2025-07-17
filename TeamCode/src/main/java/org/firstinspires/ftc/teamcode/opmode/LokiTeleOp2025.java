@@ -26,19 +26,22 @@ public class LokiTeleOp2025 extends OpMode {
         robot.update();
 
         // === DRIVER 1 CONTROLS ===
-        double axial   = -gamepad1.left_stick_y;
-        double lateral = gamepad1.left_stick_x;
-        double yaw     = gamepad1.right_stick_x;
+//        double axial   = -gamepad1.left_stick_y;
+//        double lateral = gamepad1.left_stick_x;
+//        double yaw     = gamepad1.right_stick_x;
+        double axial   = -gamepad2.left_stick_y;
+        double lateral = gamepad2.left_stick_x;
+        double yaw     = gamepad2.right_stick_x;
 
         robot.drive.drive(axial, lateral, yaw);
 
         // Claw control
-        if (gamepad1.right_bumper) robot.arm.clawClose();
-        if (gamepad1.left_bumper) robot.arm.clawOpen();
+        if (gamepad2.right_bumper) robot.arm.clawClose();
+        if (gamepad2.left_bumper) robot.arm.clawOpen();
 
         // Fine wrist adjustment
-        if (gamepad1.dpad_up) wristAdjust += 0.005;
-        if (gamepad1.dpad_down) wristAdjust -= 0.005;
+        if (gamepad1.dpad_up) wristAdjust += 0.05;
+        if (gamepad1.dpad_down) wristAdjust -= 0.05;
         wristAdjust = Math.max(0, Math.min(1, wristAdjust));
         robot.arm.setWristServoPosition(robot.arm.wristState.wristServoValue + wristAdjust);
 
@@ -53,8 +56,10 @@ public class LokiTeleOp2025 extends OpMode {
                 // Stage 1: move above sample (hover)
                 if (robot.liftPivot.isLiftRetractedForPivot()) {
                     robot.liftPivot.setPivotState(LiftPivot.PivotState.INTAKE);
+                    robot.arm.clawOpen();
                 }
-                robot.liftPivot.setLiftState(LiftPivot.LiftState.RETRACTED);
+                robot.liftPivot.setLiftState(LiftPivot.LiftState.INTAKE_MID);
+                robot.arm.setArmToState(Arm.ArmState.IDLE);
                 intakeStage = 1;
             } else if (intakeStage == 1) {
                 // Stage 2: descend slightly and grab
@@ -69,6 +74,7 @@ public class LokiTeleOp2025 extends OpMode {
         lastIntakeButton = gamepad2.a;
 
         if (gamepad2.b) { // IDLE position
+            robot.arm.setArmToState(Arm.ArmState.BUCKET);
             if (robot.liftPivot.isLiftRetractedForPivot()) {
                 robot.liftPivot.setPivotState(LiftPivot.PivotState.IDLE);
             }
@@ -85,10 +91,14 @@ public class LokiTeleOp2025 extends OpMode {
         }
 
         // Wrist override (Driver 2)
-        if (gamepad2.dpad_up) wristAdjust += 0.005;
-        if (gamepad2.dpad_down) wristAdjust -= 0.005;
+        if (gamepad2.dpad_up) wristAdjust += 0.05;
+        if (gamepad2.dpad_down) wristAdjust -= 0.05;
         wristAdjust = Math.max(0, Math.min(1, wristAdjust));
         robot.arm.setWristServoPosition(robot.arm.wristState.wristServoValue + wristAdjust);
+
+
+
+
 
         // Optional: Telemetry for debugging
         telemetry.addData("Lift Pos", robot.liftPivot.getLiftPosition());
