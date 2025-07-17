@@ -13,6 +13,9 @@ public class LokiTeleOp2025 extends OpMode {
     private LokiRobot2025 robot;
     private double wristAdjust = 0;
 
+    private int intakeStage = 0;
+    private boolean lastIntakeButton = false;
+
     @Override
     public void init() {
         robot = new LokiRobot2025(hardwareMap);
@@ -43,20 +46,27 @@ public class LokiTeleOp2025 extends OpMode {
         // === DRIVER 2 CONTROLS ===
 
         // Presets for intake positions
-        if (gamepad2.a) {
-            robot.liftPivot.setLiftState(LiftPivot.LiftState.INTAKE_MID);
-            if (robot.liftPivot.isLiftRetractedForPivot()) {
-                // Go slightly below normal intake to secure object
-                robot.liftPivot.setPivotState(LiftPivot.PivotState.INTAKE);
+        boolean intakeButtonPressed = gamepad2.a && !lastIntakeButton;
+
+        if (intakeButtonPressed) {
+            if (intakeStage == 0) {
+                // Stage 1: move above sample (hover)
+                if (robot.liftPivot.isLiftRetractedForPivot()) {
+                    robot.liftPivot.setPivotState(LiftPivot.PivotState.INTAKE);
+                }
+                robot.liftPivot.setLiftState(LiftPivot.LiftState.RETRACTED);
+                intakeStage = 1;
+            } else if (intakeStage == 1) {
+                // Stage 2: descend slightly and grab
+                robot.liftPivot.setPivotState(LiftPivot.PivotState.LOWERED_INTAKE);
+                robot.arm.clawClose();
+                intakeStage = 2;
+            } else {
+                // Reset (optional if you want to do multiple samples)
+                intakeStage = 0;
             }
         }
-
-        // Close claw automatically once pivot is near intake position
-        if (robot.liftPivot.pivotState == LiftPivot.PivotState.INTAKE &&
-                Math.abs(robot.liftPivot.getPivotPosition() - LiftPivot.PivotState.INTAKE.encoderValue) < 10 &&
-                gamepad2.a) {
-            robot.arm.clawClose();
-        }
+        lastIntakeButton = gamepad2.a;
 
         if (gamepad2.b) { // IDLE position
             if (robot.liftPivot.isLiftRetractedForPivot()) {

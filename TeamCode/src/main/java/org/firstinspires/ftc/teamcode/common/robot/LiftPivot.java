@@ -30,7 +30,8 @@ public class LiftPivot {
     private double targetPivot = 0, targetLift = 0;
     private double iPivot = 0, prevErrPivot = 0;
     private double iLift = 0, prevErrLift = 0;
-
+    private int intakeStage = 0;
+    private boolean lastIntakeButton = false;
     private ElapsedTime dtTimer = new ElapsedTime();
 
     public enum LiftState {
@@ -48,6 +49,7 @@ public class LiftPivot {
     public enum PivotState {
         IDLE(0),
         INTAKE(480),
+        LOWERED_INTAKE(510),
         BUCKET(-50);
 
         public final int encoderValue;
@@ -97,7 +99,8 @@ public class LiftPivot {
         prevErrPivot = errPivot;
 
         double thetaRad = posPivot / TICKS_PER_DEG * Math.PI / 180.0;
-        double gravityFF = (GRAVITY_FF_NOMINAL + LIFT_SAG_GAIN * liftMotorL.getCurrentPosition()) * Math.cos(thetaRad);
+        double sag = (liftState == LiftState.BUCKET) ? 0.0 : LIFT_SAG_GAIN * liftMotorL.getCurrentPosition();
+        double gravityFF = (GRAVITY_FF_NOMINAL + sag) * Math.cos(thetaRad);
 
         double outPivot = kP_PIVOT * errPivot + kI_PIVOT * iPivot + kD_PIVOT * dPivot + gravityFF;
         outPivot = Range.clip(outPivot, -1, 1);
