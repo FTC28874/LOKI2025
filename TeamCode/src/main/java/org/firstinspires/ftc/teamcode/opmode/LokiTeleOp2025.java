@@ -39,9 +39,8 @@ public class LokiTeleOp2025 extends OpMode {
         if (gamepad2.right_bumper) robot.arm.clawClose();
         if (gamepad2.left_bumper) robot.arm.clawOpen();
 
-        // Fine wrist adjustment
-        if (gamepad1.dpad_up) wristAdjust += 0.05;
-        if (gamepad1.dpad_down) wristAdjust -= 0.05;
+        if (gamepad1.dpad_right || gamepad2.dpad_right) wristAdjust += 0.005;
+        if (gamepad1.dpad_left || gamepad2.dpad_left) wristAdjust -= 0.005;
         wristAdjust = Math.max(0, Math.min(1, wristAdjust));
         robot.arm.setWristServoPosition(robot.arm.wristState.wristServoValue + wristAdjust);
 
@@ -90,15 +89,13 @@ public class LokiTeleOp2025 extends OpMode {
             }
         }
 
-        // Wrist override (Driver 2)
-        if (gamepad2.dpad_up) wristAdjust += 0.05;
-        if (gamepad2.dpad_down) wristAdjust -= 0.05;
-        wristAdjust = Math.max(0, Math.min(1, wristAdjust));
-        robot.arm.setWristServoPosition(robot.arm.wristState.wristServoValue + wristAdjust);
-
-
-
-
+        if (robot.liftPivot.pivotState == LiftPivot.PivotState.INTAKE) {
+            if (gamepad2.dpad_up) {
+                robot.liftPivot.adjustLiftTarget(15);  // Increase lift height
+            } else if (gamepad2.dpad_down) {
+                robot.liftPivot.adjustLiftTarget(-15); // Decrease lift height
+            }
+        }
 
         // Optional: Telemetry for debugging
         telemetry.addData("Lift Pos", robot.liftPivot.getLiftPosition());

@@ -138,6 +138,11 @@ public class LiftPivot {
     }
 
     public boolean isLiftRetractedForPivot() {
-        return getLiftPosition() <= 100; // threshold value
+        return getLiftPosition() <= 30; // threshold value
+    }
+
+    public void adjustLiftTarget(int deltaTicks) {
+        targetLift = Range.clip(targetLift + deltaTicks, MIN_LIFT, MAX_LIFT);
+        liftState = null; // prevent overriding by a preset
     }
 }
