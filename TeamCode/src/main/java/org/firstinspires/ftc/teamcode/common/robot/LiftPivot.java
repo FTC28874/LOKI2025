@@ -35,7 +35,8 @@ public class LiftPivot {
 
     public enum LiftState {
         RETRACTED(0),
-        BUCKET(2250);
+        BUCKET(2250),
+        INTAKE_MID(1200);
 
         public final int encoderValue;
 
