@@ -42,6 +42,7 @@ public class LokiTeleOp2025 extends OpMode {
         double lateral = gamepad1.left_stick_x * 0.75;
         double yaw     = gamepad1.right_stick_x * 0.5;
 
+        robot.drive.setManualMode();
         robot.drive.drive(axial, lateral, yaw);
         boolean xPressed = gamepad2.x;
         // Claw control
