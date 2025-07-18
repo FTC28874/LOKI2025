@@ -32,7 +32,7 @@ public class DrivePIDTest extends LinearOpMode {
                 double axial = -gamepad1.left_stick_y;
                 double lateral = gamepad1.left_stick_x;
                 double yaw = gamepad1.right_stick_x;
-                drive.drive(axial, lateral, yaw);
+                drive.driveFieldCentric(axial, lateral, yaw);
             } else {
                 drive.updateAuto();
             }

@@ -83,6 +83,33 @@ public class MecanumDrive {
         }
     }
 
+    public void driveFieldCentric(double axial, double lateral, double yaw) {
+        odo.update();  // Update heading from odometry
+
+        double heading = odo.getPosition().getHeading(AngleUnit.RADIANS);
+
+        // Rotate joystick input vector by -heading (field-centric)
+        double cos = Math.cos(-heading);
+        double sin = Math.sin(-heading);
+
+        double fieldAxial = axial * cos - lateral * sin;
+        double fieldLateral = axial * sin + lateral * cos;
+
+        // Calculate motor powers
+        double powerFL = fieldAxial + fieldLateral + yaw;
+        double powerFR = fieldAxial - fieldLateral - yaw;
+        double powerBL = fieldAxial - fieldLateral + yaw;
+        double powerBR = fieldAxial + fieldLateral - yaw;
+
+        // Normalize powers
+        double max = Math.max(1.0, Math.max(
+                Math.max(Math.abs(powerFL), Math.abs(powerFR)),
+                Math.max(Math.abs(powerBL), Math.abs(powerBR))
+        ));
+
+        setMotorPowers(powerFL / max, powerFR / max, powerBL / max, powerBR / max);
+    }
+
     public void updateAuto() {
         if (mode != DriveMode.AUTO || targetPose == null) return;
 
