@@ -12,8 +12,10 @@ public class Arm {
     private Servo clawServo = null;
 
     public enum ArmState {
-        IDLE(0.75),
-        BUCKET(0.3);
+        IDLE(0.7),
+        SPEC_INTAKE(0.37),
+        SPEC_SCORE(0.02),
+        BUCKET(0.32);
         public double armServoValue;
 
         ArmState(double armServoValue){
@@ -22,7 +24,9 @@ public class Arm {
     }
 
     public enum WristState {
-        HORIZONTAL(0.38);
+        HORIZONTAL(0.38),
+
+        VERTICAL(0.33);
         public double wristServoValue;
 
         WristState(Double wristServoValue){

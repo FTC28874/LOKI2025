@@ -18,7 +18,7 @@ public class MecanumDrive {
         driveBL.setDirection(DcMotor.Direction.REVERSE);
         driveBR.setDirection(DcMotor.Direction.FORWARD);
 
-        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {

@@ -37,6 +37,10 @@ public class LiftPivot {
     public enum LiftState {
         RETRACTED(0),
         BUCKET(2250),
+        MANUAL_ADJUST(1200),
+        SPEC_INTAKE(156),
+        SPEC_SCORE(1300),
+        SPEC_HANG(1750),
         INTAKE_MID(1200);
 
         public final int encoderValue;
@@ -50,6 +54,8 @@ public class LiftPivot {
         IDLE(0),
         INTAKE(480),
         LOWERED_INTAKE(530),
+        CLIMB(250),
+        SPEC_INTAKE(492),
         BUCKET(-50);
 
         public final int encoderValue;
@@ -87,8 +93,11 @@ public class LiftPivot {
     public void update() {
         double dt = dtTimer.seconds();
         dtTimer.reset();
-
-        targetLift = Range.clip(liftState.encoderValue, MIN_LIFT, MAX_LIFT);
+        if (liftState == LiftState.MANUAL_ADJUST) {
+            targetLift = targetLift;
+        } else {
+            targetLift = Range.clip(liftState.encoderValue, MIN_LIFT, MAX_LIFT);
+        }
         targetPivot = Range.clip(pivotState.encoderValue, MIN_PIVOT, MAX_PIVOT);
 
         // === Pivot PID + Gravity FF ===
@@ -103,7 +112,11 @@ public class LiftPivot {
         double gravityFF = (GRAVITY_FF_NOMINAL + sag) * Math.cos(thetaRad);
 
         double outPivot = kP_PIVOT * errPivot + kI_PIVOT * iPivot + kD_PIVOT * dPivot + gravityFF;
-        outPivot = Range.clip(outPivot, -1, 1);
+        if (getLiftPosition() < LiftState.SPEC_HANG.encoderValue + 100) {
+            outPivot = Range.clip(outPivot, -0.5, 0.5);
+        } else {
+            outPivot = Range.clip(outPivot, -1, 1);
+        }
         pivotMotorL.setPower(outPivot);
         pivotMotorR.setPower(outPivot);
 
@@ -142,7 +155,8 @@ public class LiftPivot {
     }
 
     public void adjustLiftTarget(int deltaTicks) {
+        liftState = LiftState.MANUAL_ADJUST;
         targetLift = Range.clip(targetLift + deltaTicks, MIN_LIFT, MAX_LIFT);
-        liftState = null; // prevent overriding by a preset
+        //liftState = null; // prevent overriding by a preset
     }
 }
