@@ -50,7 +50,7 @@ public class LiftPivot {
         }
     }
 
-    public enum PivotState {
+    public enum PivotState {//hi
         IDLE(0),
         INTAKE(480),
         LOWERED_INTAKE(530),
