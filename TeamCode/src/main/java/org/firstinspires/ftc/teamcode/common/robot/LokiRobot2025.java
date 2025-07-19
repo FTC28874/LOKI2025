@@ -13,13 +13,13 @@ public class LokiRobot2025 {
     public MecanumDrive drive;
     private ElapsedTime robotTimer;
 
-    public LokiRobot2025(HardwareMap hMap){
-        init(hMap);
+    public LokiRobot2025(HardwareMap hMap, boolean resetEncoder){
+        init(hMap, resetEncoder);
     }
 
-    public void init(HardwareMap hMap){
+    public void init(HardwareMap hMap, boolean resetEncoder){
         mainMap = hMap;
-        liftPivot = new LiftPivot(hMap);
+        liftPivot = new LiftPivot(hMap, resetEncoder);
         arm = new Arm(hMap);
         drive = new MecanumDrive(hMap);
         robotTimer = new ElapsedTime();

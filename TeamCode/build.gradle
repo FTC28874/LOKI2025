@@ -22,7 +22,7 @@ android {
         jniLibs.useLegacyPackaging true
     }
 }
-
+//hi
 repositories {
     maven {
         url = 'https://maven.brott.dev/'

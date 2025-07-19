@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.common.robot.LokiRobot2025;
-import org.firstinspires.ftc.teamcode.common.robot.LiftPivot;
 import org.firstinspires.ftc.teamcode.common.robot.Arm;
+import org.firstinspires.ftc.teamcode.common.robot.LiftPivot;
+import org.firstinspires.ftc.teamcode.common.robot.LokiRobot2025;
 
-@TeleOp(name="Loki TeleOp 2025", group="Drive")
-public class LokiTeleOp2025 extends OpMode {
+@TeleOp(name="NR Loki TeleOp 2025", group="Drive")
+public class NR_LokiTeleOp2025 extends OpMode {
 
     private LokiRobot2025 robot;
     private double wristAdjust = 0;
@@ -25,7 +24,7 @@ public class LokiTeleOp2025 extends OpMode {
 
     @Override
     public void init() {
-        robot = new LokiRobot2025(hardwareMap, true);
+        robot = new LokiRobot2025(hardwareMap, false);
         timer = new ElapsedTime();
     }
 

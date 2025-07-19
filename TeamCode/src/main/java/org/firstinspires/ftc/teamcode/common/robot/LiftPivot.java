@@ -55,7 +55,7 @@ public class LiftPivot {
         INTAKE(480),
         LOWERED_INTAKE(530),
         CLIMB(250),
-        SPEC_INTAKE(492),
+        SPEC_INTAKE(475),
         BUCKET(-50);
 
         public final int encoderValue;
@@ -68,18 +68,18 @@ public class LiftPivot {
     public LiftState liftState = LiftState.RETRACTED;
     public PivotState pivotState = PivotState.IDLE;
 
-    public LiftPivot(HardwareMap hMap) {
-        init(hMap);
+    public LiftPivot(HardwareMap hMap, boolean resetEncoder) {
+        init(hMap, resetEncoder);
     }
 
-    public void init(HardwareMap hMap) {
+    public void init(HardwareMap hMap, boolean resetEncoder) {
         liftMotorL = hMap.get(DcMotorEx.class, "liftMotorL");
         liftMotorR = hMap.get(DcMotorEx.class, "liftMotorR");
         pivotMotorL = hMap.get(DcMotorEx.class, "pivotMotorL");
         pivotMotorR = hMap.get(DcMotorEx.class, "pivotMotorR");
 
         for (DcMotorEx motor : new DcMotorEx[]{liftMotorL, liftMotorR, pivotMotorL, pivotMotorR}) {
-            motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            if (resetEncoder) motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         }

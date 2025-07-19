@@ -62,7 +62,6 @@ public class MecanumDrive {
     }
 
     public void drive(double axial, double lateral, double yaw) {
-        if (mode == DriveMode.MANUAL) {
             double powerFL = axial + lateral + yaw;
             double powerFR = axial - lateral - yaw;
             double powerBL = axial - lateral + yaw;
@@ -80,7 +79,6 @@ public class MecanumDrive {
             }
 
             setMotorPowers(powerFL, powerFR, powerBL, powerBR);
-        }
     }
 
     public void driveFieldCentric(double axial, double lateral, double yaw) {
@@ -89,8 +87,8 @@ public class MecanumDrive {
         double heading = odo.getPosition().getHeading(AngleUnit.RADIANS);
 
         // Rotate joystick input vector by -heading (field-centric)
-        double cos = Math.cos(-heading);
-        double sin = Math.sin(-heading);
+        double cos = Math.cos(heading);
+        double sin = Math.sin(heading);
 
         double fieldAxial = axial * cos - lateral * sin;
         double fieldLateral = axial * sin + lateral * cos;
@@ -111,8 +109,6 @@ public class MecanumDrive {
     }
 
     public void updateAuto() {
-        if (mode != DriveMode.AUTO || targetPose == null) return;
-
         odo.update();
         Pose2D current = odo.getPosition();
 
@@ -124,8 +120,8 @@ public class MecanumDrive {
 
         // --- Rotate the (dx, dy) into ROBOT-centric frame using -robotHeading ---
         double robotHeading = current.getHeading(AngleUnit.RADIANS);
-        double cos = Math.cos(-robotHeading);
-        double sin = Math.sin(-robotHeading);
+        double cos = Math.cos(robotHeading);
+        double sin = Math.sin(robotHeading);
 
         double axial = kP_position * (dy * cos - dx * sin);     // Forward/back
         double lateral = kP_position * (dy * sin + dx * cos);   // Strafe
